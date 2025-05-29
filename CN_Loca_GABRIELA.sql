@@ -397,3 +397,5 @@ JOIN Tipo_Documento td ON d.id_tipo_documento = td.id_tipo_documento
 JOIN Detalle_Documento dd ON d.id_documento = dd.id_documento
 JOIN Producto p ON dd.id_producto = p.id_producto
 WHERE d.id_documento = :id_documento_parametro;
+
+--listo 
