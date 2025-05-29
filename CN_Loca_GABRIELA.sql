@@ -379,14 +379,21 @@ SELECT
     d.id_documento,
     td.descripcion AS tipo_documento, 
     d.nro_correlativo,
+    TO_CHAR(d.fecha_emision, 'DD/MM/YYYY') AS fecha,
     p.nombre_producto,
     dd.cantidad,
     dd.valor_neto AS precio_unitario,
     (dd.cantidad * dd.valor_neto) AS subtotal_neto,
-    ROUND((dd.cantidad * dd.valor_neto) * 0.19) AS iva,
-    (dd.cantidad * dd.valor_neto) + ROUND((dd.cantidad * dd.valor_neto) * 0.19) AS subtotal_total
+    CASE 
+        WHEN d.afecta_exenta = 'A' THEN ROUND((dd.cantidad * dd.valor_neto) * 0.19)
+        ELSE 0 
+    END AS iva,
+    CASE 
+        WHEN d.afecta_exenta = 'A' THEN (dd.cantidad * dd.valor_neto) + ROUND((dd.cantidad * dd.valor_neto) * 0.19)
+        ELSE (dd.cantidad * dd.valor_neto)
+    END AS subtotal_total
 FROM Documento d
 JOIN Tipo_Documento td ON d.id_tipo_documento = td.id_tipo_documento
 JOIN Detalle_Documento dd ON d.id_documento = dd.id_documento
 JOIN Producto p ON dd.id_producto = p.id_producto
-WHERE d.id_documento = &id_documento;
+WHERE d.id_documento = :id_documento_parametro;
